@@ -1,0 +1,32 @@
+{
+    "name": "phlib/console-configuration",
+    "type": "library",
+    "description": "Console Configuration Helper implementation.",
+    "keywords": ["symfony", "console", "configuration", "option", "helper"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Luke Richards",
+            "email": "luke.richards@emailcenteruk.com",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "php": "~5.4",
+        "symfony/console": "^2.7"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.4",
+        "php-mock/php-mock-phpunit": "^0.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phlib\\ConsoleConfiguration\\": "src/"
+        }
+    },
+    "autoload-dev": {
+       "psr-4": {
+           "Phlib\\ConsoleConfiguration\\Tests\\": "tests/"
+       }
+    }
+}
