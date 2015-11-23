@@ -35,18 +35,27 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     protected $config = null;
 
     /**
-     * @param Application $application
-     * @param array $options
+     * @var mixed
      */
-    public static function initHelper(Application $application, array $options = [])
+    protected $default = null;
+
+    /**
+     * @param Application $application
+     * @param mixed $default
+     * @param array $options
+     * @return ConfigurationHelper
+     */
+    public static function initHelper(Application $application, $default = null, array $options = [])
     {
-        $defaults = [
+        $options = $options + [
             'name'         => 'config',
             'abbreviation' => 'c',
             'description'  => 'Path to the configuration file.',
             'filename'     => 'cli-config.php'
         ];
-        $options = $options + $defaults;
+
+        $helper = new static($options['name'], $options['filename']);
+        $helper->setDefault($default);
 
         $application
             ->getDefinition()
@@ -56,8 +65,11 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
                 InputOption::VALUE_REQUIRED,
                 $options['description']
             ));
-        $application->getHelperSet()
-            ->set(new static($options['name'], $options['filename']));
+        $application
+            ->getHelperSet()
+            ->set($helper);
+
+        return $helper;
     }
 
     /**
@@ -93,9 +105,34 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     }
 
     /**
+     * Gets the default configuration.
+     *
+     * @return mixed|false
+     */
+    public function getDefault()
+    {
+        if (is_null($this->default)) {
+            return false;
+        }
+        return $this->default;
+    }
+
+    /**
+     * Sets the default configuration used if none is specified or found.
+     *
+     * @param mixed $value
+     * @return $this
+     */
+    public function setDefault($value)
+    {
+        $this->default = $value;
+        return $this;
+    }
+
+    /**
      * Fetches the configuration. If no option is specified it'll search the local path for a file with the expected
      * filename. If an option is provided, it'll try to load the configuration from that file. If no configuration is
-     * found then it returns false. The return type of the configuration is not enforced.
+     * found then it returns false. There is no enforced return type.
      *
      * @return mixed|false
      */
@@ -108,16 +145,25 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     }
 
     /**
-     * @return mixed|false
+     * @return mixed
      */
     protected function loadConfiguration()
     {
-        $path = $this->input->getOption($this->name);
-        if ($path !== null) {
-            return $this->loadFromSpecificFile($path);
+        $path = null;
+        if ($this->input->hasOption($this->name)) {
+            $path = $this->input->getOption($this->name);
         }
 
-        return $this->loadFromDetectedFile();
+        if (is_null($path)) {
+            $config = $this->loadFromDetectedFile();
+        } else {
+            $config = $this->loadFromSpecificFile($path);
+        }
+
+        if ($config === false) {
+            $config = $this->getDefault();
+        }
+        return $config;
     }
 
     /**
@@ -127,7 +173,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     {
         $filePath = $this->detectFile();
         if ($filePath === false || !is_file($filePath) || !is_readable($filePath)) {
-            return false;
+            return $this->getDefault();
         }
         return include $filePath;
     }

@@ -38,6 +38,62 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('configuration', (new ConfigurationHelper())->getName());
     }
 
+    public function testSettingGettingDefaultConfiguration()
+    {
+        $default = ['my' => 'default', 'configuration'];
+        $helper  = new ConfigurationHelper();
+        $helper->setDefault($default);
+        $this->assertEquals($default, $helper->getDefault());
+    }
+
+    public function testNoOptionSpecifiedReturnsFalse()
+    {
+        $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(true));
+        $this->input->expects($this->any())
+            ->method('getOption')
+            ->will($this->returnValue(null));
+        $getcwd = $this->getFunctionMock('\Phlib\ConsoleConfiguration\Helper', 'getcwd');
+        $getcwd->expects($this->any())
+            ->will($this->returnValue('/path/to/files'));
+        $this->assertFalse($this->helper->fetch());
+    }
+
+    public function testNoOptionSpecifiedReturnsDefaultConfiguration()
+    {
+        $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(true));
+        $this->input->expects($this->any())
+            ->method('getOption')
+            ->will($this->returnValue(null));
+        $getcwd = $this->getFunctionMock('\Phlib\ConsoleConfiguration\Helper', 'getcwd');
+        $getcwd->expects($this->any())
+            ->will($this->returnValue('/path/to/files'));
+
+        $default = ['my' => 'default', 'configuration'];
+        $this->helper->setDefault($default);
+        $this->assertEquals($default, $this->helper->fetch());
+    }
+
+    public function testInitHelperReturnsHelperInstance()
+    {
+        $application = new Application();
+        $this->assertInstanceOf(
+            '\Phlib\ConsoleConfiguration\Helper\ConfigurationHelper',
+            ConfigurationHelper::initHelper($application)
+        );
+    }
+
+    public function testInitHelperSetsDefaultConfiguration()
+    {
+        $default = ['my' => 'config'];
+        $application = new Application();
+        $helper = ConfigurationHelper::initHelper($application, $default);
+        $this->assertEquals($default, $helper->getDefault());
+    }
+
     public function testInitHelperInitializes()
     {
         $application = new Application();
@@ -47,8 +103,11 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testDetectsFile()
     {
-        $expected = require_once __DIR__ . '/files/cli-config.php';
+        $expected = include __DIR__ . '/files/cli-config.php';
 
+        $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(true));
         $this->input->expects($this->any())
             ->method('getOption')
             ->will($this->returnValue(null));
@@ -61,6 +120,9 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     public function testDoesNotDetectFile()
     {
         $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(true));
+        $this->input->expects($this->any())
             ->method('getOption')
             ->will($this->returnValue(null));
         $getcwd = $this->getFunctionMock('\Phlib\ConsoleConfiguration\Helper', 'getcwd');
@@ -72,6 +134,9 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     public function testWithFileSpecified()
     {
         $expected = include __DIR__ . '/files/my-diff-config.php';
+        $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(true));
         $this->input->expects($this->any())
             ->method('getOption')
             ->will($this->returnValue(__DIR__ . '/files/my-diff-config.php'));
@@ -94,6 +159,9 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     {
         $expected = include __DIR__ . '/files/cli-config.php';
         $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(true));
+        $this->input->expects($this->any())
             ->method('getOption')
             ->will($this->returnValue(__DIR__ . '/files'));
         $this->assertEquals($expected, $this->helper->fetch());
@@ -105,6 +173,9 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     public function testSpecifiedFileIsNotFound()
     {
         $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(true));
+        $this->input->expects($this->any())
             ->method('getOption')
             ->will($this->returnValue(__DIR__ . '/files/my-config-not-here.php'));
         $this->helper->fetch();
@@ -112,9 +183,24 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testTheResultIsCached()
     {
+        $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(true));
         $this->input->expects($this->once())
             ->method('getOption')
             ->will($this->returnValue(__DIR__ . '/files/cli-config.php'));
         $this->helper->fetch();
+    }
+
+    public function testNoConfigInputOptionGoesToAutodetect()
+    {
+        $expected = include __DIR__ . '/files/cli-config.php';
+        $this->input->expects($this->any())
+            ->method('hasOption')
+            ->will($this->returnValue(false));
+        $getcwd = $this->getFunctionMock('\Phlib\ConsoleConfiguration\Helper', 'getcwd');
+        $getcwd->expects($this->any())
+            ->will($this->returnValue(__DIR__ . '/files'));
+        $this->assertEquals($expected, $this->helper->fetch());
     }
 }

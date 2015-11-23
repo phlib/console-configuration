@@ -35,7 +35,11 @@ use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
 
 $app = new Application('my-cli');
 $app->setCommands(['...']);
-ConfigurationHelper::initHelper($app, []);
+$helper = ConfigurationHelper::initHelper(
+    $app,
+    $default = ['host' => 'localhost'],
+    $options = []
+);
 $app->run();
 
 ```
@@ -47,7 +51,7 @@ class MyCommand extends Command
 
     protected function createMyObjectInstance()
     {
-        $config = $this->getHelper('configuration')->fetch(['my' => 'defaults']);
+        $config = $this->getHelper('configuration')->fetch();
         return new MyObjectInstance($config);
     }
 }
@@ -64,8 +68,24 @@ You can specify some options to setup the helper through the ```initHelper``` st
 |`filename`|*String*|`'cli-config.php'`|The filename that will be detected if no name is specified.|
 
 ```php
-ConfigurationHelper::initHelper($app, [
+ConfigurationHelper::initHelper($app, null, [
     'name' => 'config-option',
     'filename' => 'my-cli-config.php',
 ]);
+```
+
+## Defaults
+With no default (```null```) specified, the fetch method returns ```false```. You can specify a default configuration 
+using the ```setDefault``` method or through the ```initHelper``` static method.
+
+```php
+$helper->setDefault(['my' => 'default']);
+```
+
+## Use Case: Autodetect with no command line option
+```php
+$app = new Application('my-cli');
+$app->setCommands(['...']);
+$app->getHelperSet()->set(new ConfigurationHelper('config', 'my-config.php'));
+$app->run();
 ```
