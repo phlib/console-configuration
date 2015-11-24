@@ -16,7 +16,7 @@ $ composer require phlib/console-configuration
 or
 ``` JSON
 "require": {
-    "phlib/console-configuration": "0.1"
+    "phlib/console-configuration": "0.2"
 }
 ```
 
