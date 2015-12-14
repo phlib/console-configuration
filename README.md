@@ -73,7 +73,17 @@ With no default (```null```) specified, the fetch method returns ```false```. Yo
 using the ```setDefault``` method or through the ```initHelper``` static method.
 
 ```php
-$helper->setDefault(['my' => 'default']);
+$helper->setDefault(['host' => 'localhost']);
+```
+
+OR 
+
+```php
+ConfigurationHelper::initHelper(
+    $app,
+    ['host' => 'localhost'],
+    ['filename' => 'service-name.php']
+);
 ```
 
 ## Use Case: Autodetect with no command line option
