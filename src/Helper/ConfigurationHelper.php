@@ -30,6 +30,11 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     protected $filename;
 
     /**
+     * @var string
+     */
+    protected $detectedPath;
+
+    /**
      * @var mixed
      */
     protected $config = null;
@@ -78,7 +83,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
      */
     public function __construct($name = 'config', $filename = 'cli-config.php')
     {
-        $this->name = $name;
+        $this->name     = $name;
         $this->filename = $filename;
     }
 
@@ -112,8 +117,10 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     public function getDefault()
     {
         if (is_null($this->default)) {
+            $this->detectedPath = '[none]';
             return false;
         }
+        $this->detectedPath = '[default]';
         return $this->default;
     }
 
@@ -142,6 +149,18 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
             $this->config = $this->loadConfiguration();
         }
         return $this->config;
+    }
+
+    /**
+     * Gets the location of the detected configuration file. If none was detected and a default exists, '[default]' is
+     * returned as the description. If none was detected and NO default exists, then '[none]' is returned.
+     *
+     * @return string
+     */
+    public function getConfigPath()
+    {
+        $this->fetch();
+        return $this->detectedPath;
     }
 
     /**
@@ -175,6 +194,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         if ($filePath === false || !is_file($filePath) || !is_readable($filePath)) {
             return $this->getDefault();
         }
+        $this->detectedPath = $filePath;
         return include $filePath;
     }
 
@@ -193,6 +213,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
             throw new \InvalidArgumentException("Specified configuration '$filePath' is not accessible.");
         }
 
+        $this->detectedPath = $filePath;
         return include $filePath;
     }
 
