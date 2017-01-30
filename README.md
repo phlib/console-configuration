@@ -1,6 +1,7 @@
 # phlib/console-configuration
 
 [![Build Status](https://img.shields.io/travis/phlib/console-configuration/master.svg)](https://travis-ci.org/phlib/console-configuration)
+[![Codecov](https://img.shields.io/codecov/c/github/phlib/console-configuration.svg)](https://codecov.io/gh/phlib/console-configuration)
 [![Latest Stable Version](https://img.shields.io/packagist/v/phlib/console-configuration.svg)](https://packagist.org/packages/phlib/console-configuration)
 [![Total Downloads](https://img.shields.io/packagist/dt/phlib/console-configuration.svg)](https://packagist.org/packages/phlib/console-configuration)
 
