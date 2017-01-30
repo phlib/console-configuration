@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Console Configuration Helper implementation.",
     "keywords": ["symfony", "console", "configuration", "option", "helper"],
-    "license": "MIT",
+    "license": "LGPL-3.0",
     "authors": [
         {
             "name": "Luke Richards",
