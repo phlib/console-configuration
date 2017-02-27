@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Helper as AbstractHelper;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class ConfigurationHelper
@@ -195,13 +196,21 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
             return $this->getDefault();
         }
         $this->detectedPath = $filePath;
-        return include $filePath;
+
+        try {
+            $configuration = $this->getConfigurationArray($filePath);
+        } catch (\UnexpectedValueException $e) {
+            $configuration = $this->getDefault();
+        }
+
+        return $configuration;
     }
 
     /**
      * @param string $filePath
      * @return mixed
      * @throws \InvalidArgumentException
+     * @throws \UnexpectedValueException
      */
     protected function loadFromSpecificFile($filePath)
     {
@@ -214,7 +223,33 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         }
 
         $this->detectedPath = $filePath;
-        return include $filePath;
+
+        try {
+            $configuration = $this->getConfigurationArray($filePath);
+        } catch (\UnexpectedValueException $e) {
+            throw $e;
+        }
+
+        return $configuration;
+    }
+
+    /**
+     * @param string $filePath
+     * @return mixed
+     * @throws \UnexpectedValueException
+     */
+    protected function getConfigurationArray($filePath)
+    {
+        if (substr($filePath, -4) === '.php') {
+            $configuration = include $filePath;
+        } elseif (substr($filePath, -4) === '.yml') {
+            $configuration = Yaml::parse(file_get_contents($filePath));
+        } else {
+            $extension = substr($filePath, -4);
+            throw new \UnexpectedValueException("ConfigurationHelper: Extension {$extension} isn't supported");
+        }
+
+        return $configuration;
     }
 
     /**
