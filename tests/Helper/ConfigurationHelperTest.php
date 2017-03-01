@@ -2,6 +2,7 @@
 
 namespace Phlib\ConsoleConfiguration\Tests\Helper;
 
+use Doctrine\Instantiator\Exception\UnexpectedValueException;
 use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -106,6 +107,16 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $expected = Yaml::parse(file_get_contents($filename));
         $this->setupEnvironment('/path/to/files', $filename);
         $this->assertEquals($expected, $this->helper->fetch());
+    }
+
+    /**
+     * @expectedException UnexpectedValueException
+     */
+    public function testWithUnsupportedExtensionFileSpecified()
+    {
+        $filename = __DIR__ . '/files/cli-config.lala';
+        $this->setupEnvironment('/path/to/files', $filename);
+        $this->helper->fetch();
     }
 
     public function testUsesSpecifiedFilenameFormat()

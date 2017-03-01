@@ -197,11 +197,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         }
         $this->detectedPath = $filePath;
 
-        try {
-            $configuration = $this->getConfigurationArray($filePath);
-        } catch (\UnexpectedValueException $e) {
-            $configuration = $this->getDefault();
-        }
+        $configuration = include $filePath;
 
         return $configuration;
     }
@@ -240,13 +236,13 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
      */
     protected function getConfigurationArray($filePath)
     {
-        if (substr($filePath, -4) === '.php') {
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        if ( $extension === 'php') {
             $configuration = include $filePath;
-        } elseif (substr($filePath, -4) === '.yml') {
+        } elseif ($extension === 'yml') {
             $configuration = Yaml::parse(file_get_contents($filePath));
         } else {
-            $extension = substr($filePath, -4);
-            throw new \UnexpectedValueException("ConfigurationHelper: Extension {$extension} isn't supported");
+            throw new \UnexpectedValueException("ConfigurationHelper: Extension \"{$extension}\" isn't supported");
         }
 
         return $configuration;
