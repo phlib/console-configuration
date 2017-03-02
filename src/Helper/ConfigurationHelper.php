@@ -188,6 +188,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
 
     /**
      * @return mixed|false
+     * @throws \UnexpectedValueException
      */
     protected function loadFromDetectedFile()
     {
@@ -197,9 +198,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         }
         $this->detectedPath = $filePath;
 
-        $configuration = include $filePath;
-
-        return $configuration;
+        return $this->getConfigurationArray($filePath);
     }
 
     /**
@@ -220,13 +219,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
 
         $this->detectedPath = $filePath;
 
-        try {
-            $configuration = $this->getConfigurationArray($filePath);
-        } catch (\UnexpectedValueException $e) {
-            throw $e;
-        }
-
-        return $configuration;
+        return $this->getConfigurationArray($filePath);
     }
 
     /**
@@ -239,7 +232,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
         if ( $extension === 'php') {
             $configuration = include $filePath;
-        } elseif ($extension === 'yml') {
+        } elseif ($extension === 'yml' || $extension === 'yaml') {
             $configuration = Yaml::parse(file_get_contents($filePath));
         } else {
             throw new \UnexpectedValueException("ConfigurationHelper: Extension \"{$extension}\" isn't supported");

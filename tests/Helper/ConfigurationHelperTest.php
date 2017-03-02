@@ -2,7 +2,6 @@
 
 namespace Phlib\ConsoleConfiguration\Tests\Helper;
 
-use Doctrine\Instantiator\Exception\UnexpectedValueException;
 use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -110,7 +109,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     public function testWithUnsupportedExtensionFileSpecified()
     {
