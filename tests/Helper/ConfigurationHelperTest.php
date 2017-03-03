@@ -6,6 +6,7 @@ use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use phpmock\phpunit\PHPMock;
+use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
 {
@@ -97,6 +98,24 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $expected = include $filename;
         $this->setupEnvironment('/path/to/files', $filename);
         $this->assertEquals($expected, $this->helper->fetch());
+    }
+
+    public function testWithYmlFileSpecified()
+    {
+        $filename = __DIR__ . '/files/cli-config.yml';
+        $expected = Yaml::parse(file_get_contents($filename));
+        $this->setupEnvironment('/path/to/files', $filename);
+        $this->assertEquals($expected, $this->helper->fetch());
+    }
+
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testWithUnsupportedExtensionFileSpecified()
+    {
+        $filename = __DIR__ . '/files/cli-config.lala';
+        $this->setupEnvironment('/path/to/files', $filename);
+        $this->helper->fetch();
     }
 
     public function testUsesSpecifiedFilenameFormat()

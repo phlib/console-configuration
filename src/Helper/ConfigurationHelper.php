@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Helper as AbstractHelper;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class ConfigurationHelper
@@ -187,6 +188,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
 
     /**
      * @return mixed|false
+     * @throws \UnexpectedValueException
      */
     protected function loadFromDetectedFile()
     {
@@ -195,13 +197,15 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
             return $this->getDefault();
         }
         $this->detectedPath = $filePath;
-        return include $filePath;
+
+        return $this->getConfigurationArray($filePath);
     }
 
     /**
      * @param string $filePath
      * @return mixed
      * @throws \InvalidArgumentException
+     * @throws \UnexpectedValueException
      */
     protected function loadFromSpecificFile($filePath)
     {
@@ -214,7 +218,27 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         }
 
         $this->detectedPath = $filePath;
-        return include $filePath;
+
+        return $this->getConfigurationArray($filePath);
+    }
+
+    /**
+     * @param string $filePath
+     * @return mixed
+     * @throws \UnexpectedValueException
+     */
+    protected function getConfigurationArray($filePath)
+    {
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        if ($extension === 'php') {
+            $configuration = include $filePath;
+        } elseif ($extension === 'yml' || $extension === 'yaml') {
+            $configuration = Yaml::parse(file_get_contents($filePath));
+        } else {
+            throw new \UnexpectedValueException("ConfigurationHelper: Extension \"{$extension}\" isn't supported");
+        }
+
+        return $configuration;
     }
 
     /**
