@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2018-02-13
+### Added
+- Add support for Symfony\Console v4
+
 ## [1.1.0] - 2017-03-03
 ### Added
 - Apply GNU LGPLv3 software licence
