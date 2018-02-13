@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.1.1] - 2018-02-13
 ### Added
 - Add support for Symfony\Console v4
+- Add support for Symfony\Yaml v4
 
 ## [1.1.0] - 2017-03-03
 ### Added
