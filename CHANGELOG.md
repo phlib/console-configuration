@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Add support for Symfony\Console v5
+- Add support for Symfony\Yaml v5
 
 ## [1.1.1] - 2018-02-13
 ### Added
