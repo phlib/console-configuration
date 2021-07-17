@@ -3,10 +3,10 @@
 namespace Phlib\ConsoleConfiguration\Tests\Helper;
 
 use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
+use phpmock\phpunit\PHPMock;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use phpmock\phpunit\PHPMock;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
@@ -43,7 +43,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     public function testSettingGettingDefaultConfiguration()
     {
         $default = ['my' => 'default', 'configuration'];
-        $helper  = new ConfigurationHelper();
+        $helper = new ConfigurationHelper();
         $helper->setDefault($default);
         $this->assertEquals($default, $helper->getDefault());
     }
@@ -171,7 +171,6 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     /**
      * @param string $expected
      * @param string $setupMethod
-     * @param array $setupArgs
      * @dataProvider getConfigPathDataProvider
      */
     public function testGetConfigPath($expected, $setupMethod, array $setupArgs)
@@ -213,9 +212,6 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($inputGet));
     }
 
-    /**
-     * @param array $default
-     */
     protected function setupDefault(array $default)
     {
         $this->setupEnvironment('/path/to/files', null);

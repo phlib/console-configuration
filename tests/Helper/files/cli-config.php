@@ -1,2 +1,6 @@
 <?php
-return ['foo' => 'bar', 'bar' => 'baz', 'fizz' => 'bang'];
+return [
+    'foo' => 'bar',
+    'bar' => 'baz',
+    'fizz' => 'bang',
+];
