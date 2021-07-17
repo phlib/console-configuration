@@ -4,6 +4,7 @@ namespace Phlib\ConsoleConfiguration\Tests\Helper;
 
 use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use phpmock\phpunit\PHPMock;
 use Symfony\Component\Yaml\Yaml;
@@ -24,14 +25,14 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->input  = $this->getMock('Symfony\Component\Console\Input\InputInterface');
+        $this->input = $this->getMock(InputInterface::class);
         $this->helper = new ConfigurationHelper();
         $this->helper->setInput($this->input);
     }
 
     public function testImplementsInputAwareInterface()
     {
-        $this->assertInstanceOf('\Symfony\Component\Console\Input\InputAwareInterface', $this->helper);
+        $this->assertInstanceOf(InputAwareInterface::class, $this->helper);
     }
 
     public function testGetName()
@@ -64,7 +65,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $this->assertInstanceOf(
-            '\Phlib\ConsoleConfiguration\Helper\ConfigurationHelper',
+            ConfigurationHelper::class,
             ConfigurationHelper::initHelper($application)
         );
     }
