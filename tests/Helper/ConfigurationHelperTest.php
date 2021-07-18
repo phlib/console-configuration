@@ -6,12 +6,13 @@ namespace Phlib\ConsoleConfiguration\Tests\Helper;
 
 use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
 use phpmock\phpunit\PHPMock;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
+class ConfigurationHelperTest extends TestCase
 {
     use PHPMock;
 
@@ -25,21 +26,21 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
      */
     protected $helper;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $this->input = $this->getMock(InputInterface::class);
+        $this->input = $this->createMock(InputInterface::class);
         $this->helper = new ConfigurationHelper();
         $this->helper->setInput($this->input);
     }
 
     public function testImplementsInputAwareInterface(): void
     {
-        $this->assertInstanceOf(InputAwareInterface::class, $this->helper);
+        static::assertInstanceOf(InputAwareInterface::class, $this->helper);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('configuration', (new ConfigurationHelper())->getName());
+        static::assertSame('configuration', (new ConfigurationHelper())->getName());
     }
 
     public function testSettingGettingDefaultConfiguration(): void
@@ -47,29 +48,26 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $default = ['my' => 'default', 'configuration'];
         $helper = new ConfigurationHelper();
         $helper->setDefault($default);
-        $this->assertEquals($default, $helper->getDefault());
+        static::assertSame($default, $helper->getDefault());
     }
 
     public function testNoOptionSpecifiedReturnsFalse(): void
     {
         $this->setupEnvironment('/path/to/files', null);
-        $this->assertFalse($this->helper->fetch());
+        static::assertFalse($this->helper->fetch());
     }
 
     public function testNoOptionSpecifiedReturnsDefaultConfiguration(): void
     {
         $default = ['my' => 'default', 'configuration'];
         $this->setupDefault($default);
-        $this->assertEquals($default, $this->helper->fetch());
+        static::assertSame($default, $this->helper->fetch());
     }
 
     public function testInitHelperReturnsHelperInstance(): void
     {
         $application = new Application();
-        $this->assertInstanceOf(
-            ConfigurationHelper::class,
-            ConfigurationHelper::initHelper($application)
-        );
+        static::assertInstanceOf(ConfigurationHelper::class, ConfigurationHelper::initHelper($application));
     }
 
     public function testInitHelperSetsDefaultConfiguration(): void
@@ -77,14 +75,14 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $default = ['my' => 'config'];
         $application = new Application();
         $helper = ConfigurationHelper::initHelper($application, $default);
-        $this->assertEquals($default, $helper->getDefault());
+        static::assertSame($default, $helper->getDefault());
     }
 
     public function testInitHelperInitializes(): void
     {
         $application = new Application();
         ConfigurationHelper::initHelper($application);
-        $this->assertTrue($application->getDefinition()->hasOption('config'));
+        static::assertTrue($application->getDefinition()->hasOption('config'));
     }
 
     public function testDetectsFile(): void
@@ -92,7 +90,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $filename = __DIR__ . '/files/cli-config.php';
         $expected = include $filename;
         $this->setupEnvironment(dirname($filename), null);
-        $this->assertEquals($expected, $this->helper->fetch());
+        static::assertSame($expected, $this->helper->fetch());
     }
 
     public function testWithFileSpecified(): void
@@ -100,7 +98,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $filename = __DIR__ . '/files/my-diff-config.php';
         $expected = include $filename;
         $this->setupEnvironment('/path/to/files', $filename);
-        $this->assertEquals($expected, $this->helper->fetch());
+        static::assertSame($expected, $this->helper->fetch());
     }
 
     public function testWithYmlFileSpecified(): void
@@ -108,7 +106,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $filename = __DIR__ . '/files/cli-config.yml';
         $expected = Yaml::parse(file_get_contents($filename));
         $this->setupEnvironment('/path/to/files', $filename);
-        $this->assertEquals($expected, $this->helper->fetch());
+        static::assertSame($expected, $this->helper->fetch());
     }
 
     /**
@@ -128,9 +126,9 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $helper = new ConfigurationHelper('config', $filenameFormat);
         $helper->setInput($this->input);
         $getcwd = $this->getFunctionMock('\Phlib\ConsoleConfiguration\Helper', 'getcwd');
-        $getcwd->expects($this->any())
-            ->will($this->returnValue(__DIR__ . '/files'));
-        $this->assertEquals($expected, $helper->fetch());
+        $getcwd->expects(static::any())
+            ->willReturn(__DIR__ . '/files');
+        static::assertSame($expected, $helper->fetch());
     }
 
     public function testSpecifiedDirectory(): void
@@ -138,7 +136,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $filename = __DIR__ . '/files/cli-config.php';
         $expected = include $filename;
         $this->setupEnvironment('/path/to/files', dirname($filename));
-        $this->assertEquals($expected, $this->helper->fetch());
+        static::assertSame($expected, $this->helper->fetch());
     }
 
     /**
@@ -152,12 +150,12 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testTheResultIsCached(): void
     {
-        $this->input->expects($this->any())
+        $this->input->expects(static::any())
             ->method('hasOption')
-            ->will($this->returnValue(true));
-        $this->input->expects($this->once())
+            ->willReturn(true);
+        $this->input->expects(static::once())
             ->method('getOption')
-            ->will($this->returnValue(__DIR__ . '/files/cli-config.php'));
+            ->willReturn(__DIR__ . '/files/cli-config.php');
         $this->helper->fetch();
     }
 
@@ -167,7 +165,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
         $expected = include $filename;
 
         $this->setupEnvironment(dirname($filename), null, false);
-        $this->assertEquals($expected, $this->helper->fetch());
+        static::assertSame($expected, $this->helper->fetch());
     }
 
     /**
@@ -176,7 +174,7 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     public function testGetConfigPath(string $expected, string $setupMethod, array $setupArgs): void
     {
         call_user_func_array([$this, $setupMethod], $setupArgs);
-        $this->assertEquals($expected, $this->helper->getConfigPath());
+        static::assertSame($expected, $this->helper->getConfigPath());
     }
 
     public function getConfigPathDataProvider(): array
@@ -196,15 +194,15 @@ class ConfigurationHelperTest extends \PHPUnit_Framework_TestCase
     private function setupEnvironment(string $cwd, ?string $inputGet, bool $inputHas = true): void
     {
         $getcwd = $this->getFunctionMock('\Phlib\ConsoleConfiguration\Helper', 'getcwd');
-        $getcwd->expects($this->any())
-            ->will($this->returnValue($cwd));
+        $getcwd->expects(static::any())
+            ->willReturn($cwd);
 
-        $this->input->expects($this->any())
+        $this->input->expects(static::any())
             ->method('hasOption')
-            ->will($this->returnValue($inputHas));
-        $this->input->expects($this->any())
+            ->willReturn($inputHas);
+        $this->input->expects(static::any())
             ->method('getOption')
-            ->will($this->returnValue($inputGet));
+            ->willReturn($inputGet);
     }
 
     private function setupDefault(array $default): void
