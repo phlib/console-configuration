@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phlib\ConsoleConfiguration\Helper;
 
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\Helper as AbstractHelper;
 use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Helper\Helper as AbstractHelper;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -46,18 +48,15 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     protected $default = null;
 
     /**
-     * @param Application $application
      * @param mixed $default
-     * @param array $options
-     * @return ConfigurationHelper
      */
-    public static function initHelper(Application $application, $default = null, array $options = [])
+    public static function initHelper(Application $application, $default = null, array $options = []): self
     {
         $options = $options + [
-            'name'         => 'config',
+            'name' => 'config',
             'abbreviation' => 'c',
-            'description'  => 'Path to the configuration file.',
-            'filename'     => 'cli-config.php'
+            'description' => 'Path to the configuration file.',
+            'filename' => 'cli-config.php',
         ];
 
         $helper = new static($options['name'], $options['filename']);
@@ -78,22 +77,13 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         return $helper;
     }
 
-    /**
-     * @param string $name
-     * @param string $filename
-     */
-    public function __construct($name = 'config', $filename = 'cli-config.php')
+    public function __construct(string $name = 'config', string $filename = 'cli-config.php')
     {
-        $this->name     = $name;
+        $this->name = $name;
         $this->filename = $filename;
     }
 
-    /**
-     * Sets the Console Input.
-     *
-     * @param InputInterface $input
-     */
-    public function setInput(InputInterface $input)
+    public function setInput(InputInterface $input): void
     {
         $this->input = $input;
     }
@@ -101,11 +91,9 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     /**
      * Returns the canonical name of this helper.
      *
-     * @return string The canonical name
-     *
      * @api
      */
-    public function getName()
+    public function getName(): string
     {
         return 'configuration';
     }
@@ -117,7 +105,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
      */
     public function getDefault()
     {
-        if (is_null($this->default)) {
+        if ($this->default === null) {
             $this->detectedPath = '[none]';
             return false;
         }
@@ -129,9 +117,8 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
      * Sets the default configuration used if none is specified or found.
      *
      * @param mixed $value
-     * @return $this
      */
-    public function setDefault($value)
+    public function setDefault($value): self
     {
         $this->default = $value;
         return $this;
@@ -146,7 +133,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
      */
     public function fetch()
     {
-        if (is_null($this->config)) {
+        if ($this->config === null) {
             $this->config = $this->loadConfiguration();
         }
         return $this->config;
@@ -155,10 +142,8 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     /**
      * Gets the location of the detected configuration file. If none was detected and a default exists, '[default]' is
      * returned as the description. If none was detected and NO default exists, then '[none]' is returned.
-     *
-     * @return string
      */
-    public function getConfigPath()
+    public function getConfigPath(): string
     {
         $this->fetch();
         return $this->detectedPath;
@@ -174,7 +159,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
             $path = $this->input->getOption($this->name);
         }
 
-        if (is_null($path)) {
+        if ($path === null) {
             $config = $this->loadFromDetectedFile();
         } else {
             $config = $this->loadFromSpecificFile($path);
@@ -188,7 +173,6 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
 
     /**
      * @return mixed|false
-     * @throws \UnexpectedValueException
      */
     protected function loadFromDetectedFile()
     {
@@ -202,19 +186,16 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     }
 
     /**
-     * @param string $filePath
      * @return mixed
-     * @throws \InvalidArgumentException
-     * @throws \UnexpectedValueException
      */
-    protected function loadFromSpecificFile($filePath)
+    protected function loadFromSpecificFile(string $filePath)
     {
         if (is_dir($filePath)) {
             $filePath = $filePath . DIRECTORY_SEPARATOR . $this->filename;
         }
 
         if (!is_file($filePath) || !is_readable($filePath)) {
-            throw new \InvalidArgumentException("Specified configuration '$filePath' is not accessible.");
+            throw new \InvalidArgumentException("Specified configuration '${filePath}' is not accessible.");
         }
 
         $this->detectedPath = $filePath;
@@ -223,11 +204,9 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     }
 
     /**
-     * @param string $filePath
      * @return mixed
-     * @throws \UnexpectedValueException
      */
-    protected function getConfigurationArray($filePath)
+    protected function getConfigurationArray(string $filePath)
     {
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
         if ($extension === 'php') {

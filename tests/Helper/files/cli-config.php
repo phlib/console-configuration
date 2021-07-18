@@ -1,2 +1,9 @@
 <?php
-return ['foo' => 'bar', 'bar' => 'baz', 'fizz' => 'bang'];
+
+declare(strict_types=1);
+
+return [
+    'foo' => 'bar',
+    'bar' => 'baz',
+    'fizz' => 'bang',
+];
