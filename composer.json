@@ -30,7 +30,7 @@
     },
     "autoload-dev": {
        "psr-4": {
-           "Phlib\\ConsoleConfiguration\\Tests\\": "tests/"
+           "Phlib\\ConsoleConfiguration\\": "tests/"
        }
     },
     "scripts": {

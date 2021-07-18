@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Phlib\ConsoleConfiguration\Tests\Helper;
+namespace Phlib\ConsoleConfiguration\Helper;
 
-use Phlib\ConsoleConfiguration\Helper\ConfigurationHelper;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -125,7 +124,7 @@ class ConfigurationHelperTest extends TestCase
         $expected = include __DIR__ . '/files/' . $filenameFormat;
         $helper = new ConfigurationHelper('config', $filenameFormat);
         $helper->setInput($this->input);
-        $getcwd = $this->getFunctionMock('\Phlib\ConsoleConfiguration\Helper', 'getcwd');
+        $getcwd = $this->getFunctionMock(__NAMESPACE__, 'getcwd');
         $getcwd->expects(static::any())
             ->willReturn(__DIR__ . '/files');
         static::assertSame($expected, $helper->fetch());
@@ -193,7 +192,7 @@ class ConfigurationHelperTest extends TestCase
 
     private function setupEnvironment(string $cwd, ?string $inputGet, bool $inputHas = true): void
     {
-        $getcwd = $this->getFunctionMock('\Phlib\ConsoleConfiguration\Helper', 'getcwd');
+        $getcwd = $this->getFunctionMock(__NAMESPACE__, 'getcwd');
         $getcwd->expects(static::any())
             ->willReturn($cwd);
 
