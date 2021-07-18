@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phlib\ConsoleConfiguration\Helper;
 
 use phpmock\phpunit\PHPMock;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputAwareInterface;
@@ -16,12 +17,12 @@ class ConfigurationHelperTest extends TestCase
     use PHPMock;
 
     /**
-     * @var InputInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var InputInterface|MockObject
      */
     protected $input;
 
     /**
-     * @var ConfigurationHelper|\PHPUnit_Framework_MockObject_MockObject
+     * @var ConfigurationHelper|MockObject
      */
     protected $helper;
 
@@ -108,11 +109,9 @@ class ConfigurationHelperTest extends TestCase
         static::assertSame($expected, $this->helper->fetch());
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
     public function testWithUnsupportedExtensionFileSpecified(): void
     {
+        $this->expectException(\UnexpectedValueException::class);
         $filename = __DIR__ . '/files/cli-config.lala';
         $this->setupEnvironment('/path/to/files', $filename);
         $this->helper->fetch();
@@ -138,11 +137,9 @@ class ConfigurationHelperTest extends TestCase
         static::assertSame($expected, $this->helper->fetch());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSpecifiedFileIsNotFound(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
         $this->setupEnvironment('/path/to/files', __DIR__ . '/files/my-config-not-here.php');
         $this->helper->fetch();
     }
