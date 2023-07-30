@@ -1,6 +1,6 @@
 # phlib/console-configuration
 
-[![Code Checks](https://img.shields.io/github/workflow/status/phlib/console-configuration/CodeChecks?logo=github)](https://github.com/phlib/console-configuration/actions/workflows/code-checks.yml)
+[![Code Checks](https://img.shields.io/github/actions/workflow/status/phlib/console-configuration/code-checks.yml?logo=github)](https://github.com/phlib/console-configuration/actions/workflows/code-checks.yml)
 [![Codecov](https://img.shields.io/codecov/c/github/phlib/console-configuration.svg?logo=codecov)](https://codecov.io/gh/phlib/console-configuration)
 [![Latest Stable Version](https://img.shields.io/packagist/v/phlib/console-configuration.svg?logo=packagist)](https://packagist.org/packages/phlib/console-configuration)
 [![Total Downloads](https://img.shields.io/packagist/dt/phlib/console-configuration.svg?logo=packagist)](https://packagist.org/packages/phlib/console-configuration)
