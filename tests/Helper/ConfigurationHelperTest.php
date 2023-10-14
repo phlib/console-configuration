@@ -45,7 +45,10 @@ class ConfigurationHelperTest extends TestCase
 
     public function testSettingGettingDefaultConfiguration(): void
     {
-        $default = ['my' => 'default', 'configuration'];
+        $default = [
+            'my' => 'default',
+            'configuration',
+        ];
         $helper = new ConfigurationHelper();
         $helper->setDefault($default);
         static::assertSame($default, $helper->getDefault());
@@ -59,7 +62,10 @@ class ConfigurationHelperTest extends TestCase
 
     public function testNoOptionSpecifiedReturnsDefaultConfiguration(): void
     {
-        $default = ['my' => 'default', 'configuration'];
+        $default = [
+            'my' => 'default',
+            'configuration',
+        ];
         $this->setupDefault($default);
         static::assertSame($default, $this->helper->fetch());
     }
@@ -72,7 +78,9 @@ class ConfigurationHelperTest extends TestCase
 
     public function testInitHelperSetsDefaultConfiguration(): void
     {
-        $default = ['my' => 'config'];
+        $default = [
+            'my' => 'config',
+        ];
         $application = new Application();
         $helper = ConfigurationHelper::initHelper($application, $default);
         static::assertSame($default, $helper->getDefault());
@@ -176,7 +184,9 @@ class ConfigurationHelperTest extends TestCase
     public function getConfigPathDataProvider(): array
     {
         $filename = __DIR__ . '/files/cli-config.php';
-        $default  = ['some' => 'settings'];
+        $default = [
+            'some' => 'settings',
+        ];
 
         return [
             ['[none]',    'setupEnvironment', ['/path/to/files', null]],
