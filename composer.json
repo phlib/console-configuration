@@ -29,12 +29,12 @@
         }
     },
     "autoload-dev": {
-       "psr-4": {
-           "Phlib\\ConsoleConfiguration\\": "tests/"
-       }
+        "psr-4": {
+            "Phlib\\ConsoleConfiguration\\": "tests/"
+        }
     },
     "scripts": {
-        "cs-check": "vendor/bin/ecs",
-        "cs-fix": "vendor/bin/ecs --fix"
+        "check-cs": "vendor/bin/ecs check --ansi",
+        "fix-cs": "vendor/bin/ecs check --fix --ansi"
     }
 }

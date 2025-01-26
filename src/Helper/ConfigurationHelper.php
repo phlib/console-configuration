@@ -12,8 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class ConfigurationHelper
- * @package Phlib\ConsoleConfiguration\Helper
+ * @package phlib/console-configuration
  */
 class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
 {
