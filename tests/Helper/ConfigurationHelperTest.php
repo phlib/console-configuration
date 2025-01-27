@@ -16,15 +16,9 @@ class ConfigurationHelperTest extends TestCase
 {
     use PHPMock;
 
-    /**
-     * @var InputInterface|MockObject
-     */
-    protected $input;
+    private InputInterface&MockObject $input;
 
-    /**
-     * @var ConfigurationHelper|MockObject
-     */
-    protected $helper;
+    private ConfigurationHelper $helper;
 
     protected function setUp(): void
     {
@@ -181,7 +175,7 @@ class ConfigurationHelperTest extends TestCase
         static::assertSame($expected, $this->helper->getConfigPath());
     }
 
-    public function getConfigPathDataProvider(): array
+    public static function getConfigPathDataProvider(): array
     {
         $filename = __DIR__ . '/files/cli-config.php';
         $default = [
