@@ -16,42 +16,20 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
 {
-    /**
-     * @var InputInterface
-     */
-    protected $input;
+    protected InputInterface $input;
 
-    /**
-     * @var string
-     */
-    protected $name;
+    protected string $detectedPath;
 
-    /**
-     * @var string
-     */
-    protected $filename;
+    protected mixed $config;
 
-    /**
-     * @var string
-     */
-    protected $detectedPath;
-
-    /**
-     * @var mixed
-     */
-    protected $config = null;
-
-    /**
-     * @var mixed
-     */
-    protected $default = null;
+    protected mixed $default;
 
     /**
      * @param mixed $default
      */
     public static function initHelper(Application $application, $default = null, array $options = []): self
     {
-        $options = $options + [
+        $options += [
             'name' => 'config',
             'abbreviation' => 'c',
             'description' => 'Path to the configuration file.',
@@ -76,10 +54,10 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         return $helper;
     }
 
-    public function __construct(string $name = 'config', string $filename = 'cli-config.php')
-    {
-        $this->name = $name;
-        $this->filename = $filename;
+    public function __construct(
+        protected string $name = 'config',
+        protected string $filename = 'cli-config.php'
+    ) {
     }
 
     public function setInput(InputInterface $input): void
@@ -102,9 +80,9 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
      *
      * @return mixed|false
      */
-    public function getDefault()
+    public function getDefault(): mixed
     {
-        if ($this->default === null) {
+        if (!isset($this->default)) {
             $this->detectedPath = '[none]';
             return false;
         }
@@ -114,10 +92,8 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
 
     /**
      * Sets the default configuration used if none is specified or found.
-     *
-     * @param mixed $value
      */
-    public function setDefault($value): self
+    public function setDefault(mixed $value): self
     {
         $this->default = $value;
         return $this;
@@ -130,9 +106,9 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
      *
      * @return mixed|false
      */
-    public function fetch()
+    public function fetch(): mixed
     {
-        if ($this->config === null) {
+        if (!isset($this->config)) {
             $this->config = $this->loadConfiguration();
         }
         return $this->config;
@@ -148,21 +124,14 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         return $this->detectedPath;
     }
 
-    /**
-     * @return mixed
-     */
-    protected function loadConfiguration()
+    protected function loadConfiguration(): mixed
     {
         $path = null;
         if ($this->input->hasOption($this->name)) {
             $path = $this->input->getOption($this->name);
         }
 
-        if ($path === null) {
-            $config = $this->loadFromDetectedFile();
-        } else {
-            $config = $this->loadFromSpecificFile($path);
-        }
+        $config = $path === null ? $this->loadFromDetectedFile() : $this->loadFromSpecificFile($path);
 
         if ($config === false) {
             $config = $this->getDefault();
@@ -173,7 +142,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
     /**
      * @return mixed|false
      */
-    protected function loadFromDetectedFile()
+    protected function loadFromDetectedFile(): mixed
     {
         $filePath = $this->detectFile();
         if ($filePath === false || !is_file($filePath) || !is_readable($filePath)) {
@@ -184,10 +153,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         return $this->getConfigurationArray($filePath);
     }
 
-    /**
-     * @return mixed
-     */
-    protected function loadFromSpecificFile(string $filePath)
+    protected function loadFromSpecificFile(string $filePath): mixed
     {
         if (is_dir($filePath)) {
             $filePath = $filePath . DIRECTORY_SEPARATOR . $this->filename;
@@ -202,10 +168,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         return $this->getConfigurationArray($filePath);
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getConfigurationArray(string $filePath)
+    protected function getConfigurationArray(string $filePath): mixed
     {
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
         if ($extension === 'php') {
@@ -219,10 +182,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         return $configuration;
     }
 
-    /**
-     * @return string|false
-     */
-    protected function detectFile()
+    protected function detectFile(): string|false
     {
         $directories = [getcwd(), getcwd() . DIRECTORY_SEPARATOR . 'config'];
         $configFile = null;

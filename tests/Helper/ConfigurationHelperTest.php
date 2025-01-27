@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phlib\ConsoleConfiguration\Helper;
 
 use phpmock\phpunit\PHPMock;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -16,15 +17,9 @@ class ConfigurationHelperTest extends TestCase
 {
     use PHPMock;
 
-    /**
-     * @var InputInterface|MockObject
-     */
-    protected $input;
+    private InputInterface&MockObject $input;
 
-    /**
-     * @var ConfigurationHelper|MockObject
-     */
-    protected $helper;
+    private ConfigurationHelper $helper;
 
     protected function setUp(): void
     {
@@ -172,16 +167,14 @@ class ConfigurationHelperTest extends TestCase
         static::assertSame($expected, $this->helper->fetch());
     }
 
-    /**
-     * @dataProvider getConfigPathDataProvider
-     */
+    #[DataProvider('getConfigPathDataProvider')]
     public function testGetConfigPath(string $expected, string $setupMethod, array $setupArgs): void
     {
         call_user_func_array([$this, $setupMethod], $setupArgs);
         static::assertSame($expected, $this->helper->getConfigPath());
     }
 
-    public function getConfigPathDataProvider(): array
+    public static function getConfigPathDataProvider(): array
     {
         $filename = __DIR__ . '/files/cli-config.php';
         $default = [
