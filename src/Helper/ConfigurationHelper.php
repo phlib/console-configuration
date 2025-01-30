@@ -160,7 +160,7 @@ class ConfigurationHelper extends AbstractHelper implements InputAwareInterface
         }
 
         if (!is_file($filePath) || !is_readable($filePath)) {
-            throw new \InvalidArgumentException("Specified configuration '${filePath}' is not accessible.");
+            throw new \InvalidArgumentException("Specified configuration '{$filePath}' is not accessible.");
         }
 
         $this->detectedPath = $filePath;
